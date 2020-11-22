@@ -1,20 +1,100 @@
 <template>
-  <img alt="Vue logo" src="./assets/logo.png">
-  <HelloWorld msg="Welcome to Your Vue.js App"/>
+  <div class="main">
+    <h2>Things to do</h2>
+
+    <form @submit.prevent="addTodo" class="form-addTodo">
+      <input class="input-group" name="field-addTodo" v-model="item" autocomplete="off">
+      <button class="btn btn-success" name="btn-addTodo">Add item +</button>
+    </form>
+
+    <div class="checklist">
+      <h3>What do I have to do today?</h3>
+      <span v-if="!listTodo.length">You don't have anything to do today. You are free to go :) Act wisely!</span>
+      <ul class='checklist-container'>
+        <li class="checklist-item" v-for="todo in listTodo" :key="todo.id">
+            <label :for="'item_' + todo.id">
+              <input type="checkbox" :id="'item_' + todo.id" v-model="todo.done"> <span :class="{ done : todo.done}">{{ todo.title }}</span>
+              <button class="removeBtn" name="removeTodo" @click="removeTodo(todo)">Remove item</button>
+            </label>
+        </li>
+      </ul>
+    </div>
+  </div>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
 
 export default {
-  name: 'App',
-  components: {
-    HelloWorld
+  name: 'Checklist',
+  data() {
+    return {
+      item: '',
+      counter: '',
+      listTodo: [],
+      listFromDB: []
+    }
+  },
+  methods: {
+    addTodo() {
+      console.log(this.listTodo.length);
+      if (this.item) {
+
+        this.counter = this.listTodo.length;
+        console.log(this.counter);
+
+        this.listTodo.push({
+          id: this.counter + 1,
+          title: this.item,
+          done: false
+        })
+        this.item = '';
+        this.counter = this.counter + 1;
+      }
+    },
+    removeTodo(todo) {
+      var answer = true;
+
+      if (todo.done) {
+        answer = window.confirm(todo.title + " is set as done. Are you sure you want to remove it?");
+      }
+
+      if (!answer) return; 
+
+      const todoIndex = this.listTodo.indexOf(todo);
+      this.listTodo.splice(todoIndex, 1);
+    }
+  },
+  created() {
+    // Get the saved list from the database.
+    // Connect to a PHP controller that would take the data and return.
+    console.log(this.listTodo.length);
+    this.listFromDB = [
+      {
+        id: 1,
+        title: 'Wash the car',
+        done: false
+      },
+      {
+        id: 2,
+        title: 'Study Java',
+        done: true
+      },
+      {
+        id: 3,
+        title: 'Study Javascript',
+        done: true
+      },
+    ];
+
+    // this.listTodo = this.listFromDB;
   }
 }
 </script>
 
 <style>
+body {
+  background: #007ea6;
+}
 #app {
   font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
@@ -22,5 +102,63 @@ export default {
   text-align: center;
   color: #2c3e50;
   margin-top: 60px;
+}
+.main h2 {
+  color: #fff;
+}
+.form-addTodo input {
+  padding: 10px;
+  color: #333;
+  border-radius: 3px;
+  width: 40%;
+  border: none;
+  font-size: 1.3em;
+}
+
+.form-addTodo button {
+  background: #069;
+  color: #fff;
+  font-size: 1.3em;
+  border: none;    
+  padding: 10px;
+  cursor: pointer;
+}
+
+.checklist {
+  width: 50%;
+  margin: 35px auto;
+  background: #ffffff;
+  padding: 15px;
+  border-radius: 5px;
+  box-shadow: 0px 10px 11px -10px #fff;
+}
+
+.checklist-container .checklist-item {
+  width: 100%;
+  list-style: none;
+  color: #333;
+  text-align: left;
+  font-size: 1.2em;
+  line-height: 3rem;
+}
+.checklist-container .checklist-item label {
+    width: 100%;
+    display: block;
+    cursor: pointer;
+}
+
+.checklist-container .checklist-item label .done {
+  text-decoration: line-through;
+}
+
+.removeBtn {
+  background: #ff0000;
+  color: #fff;
+  font-size: 1rem;
+  border: none;
+  padding: 10px;
+  cursor: pointer;
+  border-radius: 5px;
+  float: right;
 }
 </style>
