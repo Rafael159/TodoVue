@@ -9,7 +9,18 @@
 
     <div class="checklist">
       <h3>What do I have to do today?</h3>
-      <span v-if="!listTodo.length">You don't have anything to do today. You are free to go :) Act wisely!</span>
+      <span v-if="!listTodo.length">You don't have anything to do today. You are free to go :) Act wisely!</span><br>
+      <div class="actions">
+        <div class="doneGroup group">
+          <span v-if="listTodo.length">Set all itens as done</span><br>
+          <button class="btnAllDone btn" @click="allDone">Add all</button>
+        </div>
+        <div class="doneGroup group">
+          <span v-if="listTodo.length">Set all itens as undone</span><br>
+          <button class="btnAllUndone btn" @click="allUndone">Remove all</button>
+        </div>
+      </div>
+      
       <ul class='checklist-container'>
         <li class="checklist-item" v-for="todo in listTodo" :key="todo.id">
             <label :for="'item_' + todo.id">
@@ -62,12 +73,21 @@ export default {
 
       const todoIndex = this.listTodo.indexOf(todo);
       this.listTodo.splice(todoIndex, 1);
+    },
+    allDone() {
+      this.listTodo.forEach(item => {
+        item.done = true;
+      });
+    },
+    allUndone() {
+      this.listTodo.forEach(item => {
+        item.done = false;
+      });
     }
   },
   created() {
     // Get the saved list from the database.
     // Connect to a PHP controller that would take the data and return.
-    console.log(this.listTodo.length);
     this.listFromDB = [
       {
         id: 1,
@@ -86,7 +106,7 @@ export default {
       },
     ];
 
-    // this.listTodo = this.listFromDB;
+    this.listTodo = this.listFromDB;
   }
 }
 </script>
@@ -152,7 +172,7 @@ body {
 }
 
 .removeBtn {
-  background: #ff0000;
+  background: #c84343;
   color: #fff;
   font-size: 1rem;
   border: none;
@@ -160,5 +180,29 @@ body {
   cursor: pointer;
   border-radius: 5px;
   float: right;
+}
+.btn {
+  color: #fff;
+  font-size: 1rem;
+  border: none;
+  padding: 10px;
+  cursor: pointer;
+  border-radius: 5px;
+}
+.btnAllDone {
+  background: #197e19;
+}
+
+.btnAllUndone {
+  background: #c84343;
+}
+
+.actions {
+  width: 100%;
+}
+
+.actions .group {
+  display: inline-block;
+  width: 50%;
 }
 </style>
